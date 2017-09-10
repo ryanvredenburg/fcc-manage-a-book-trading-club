@@ -1,6 +1,7 @@
 'use strict'
 
 var path = process.cwd()
+var User = require('../models/users')
 
 module.exports = function (app, passport) {
   function isLoggedIn (req, res, next) {
@@ -18,7 +19,7 @@ module.exports = function (app, passport) {
 
   app.route('/login')
 		.get(function (req, res) {
-  res.render('login', { message: req.flash('loginMessage') })
+  res.render('login', { message: req.flash('loginMessage'), user: req.user })
 })
 
   app.route('/logout')
@@ -29,12 +30,25 @@ module.exports = function (app, passport) {
 
   app.route('/profile')
 		.get(isLoggedIn, function (req, res) {
-  res.render('profile', { user: req.user })
-})
+      res.render('profile', { message: '', user: req.user })
+  })
+    .post(isLoggedIn, function (req, res) {
+       User.findOne({_id: req.user}, function (error, user) {
+        if (error) return res.send(error)
+        user.name = req.body.name
+        user.city = req.body.city
+        user.state = req.body.state
+        user.save( function (error){
+          if (error) return res.send(error)
+          res.render('profile', { message: 'Profile saved successfully!', user: user })
+        })    
+    })
+  })
+        
 
   app.route('/signup')
     .get(function (req, res) {
-      res.render('signup', {message: req.flash('signupMessage')})
+      res.render('signup', {message: req.flash('signupMessage'), user: req.user })
     })
 
   // process the signup form
