@@ -1,0 +1,55 @@
+<%include nav.ejs %>
+
+<p>
+requests for your books
+</p>
+
+<p>
+  Your Requests for other books
+</p>
+
+
+<p>
+  your books
+</p>
+<% var books = myBooks %>
+<%include bookDisplay.ejs %>
+
+<p>
+  add books
+</p>
+
+<div class="input-group">
+  <input id="searchString" type="text" class="form-control" placeholder="Search for...">
+  <span class="input-group-btn">
+    <button class="btn btn-secondary" type="button" id="performSearch">Go!</button>
+  </span>
+</div>
+<div id="searchResults"></div>
+
+<script>
+$(document).ready(function () {
+  $('#performSearch').click(function () {
+    var searchResults = $('#searchResults')
+    var searchString = document.getElementById("searchString").value
+    $.getJSON('/search/'+searchString, function (data) {
+      searchResults.empty()
+      searchResults.html(booksToTable(data))
+      
+    })
+    searchResults.text('Performing search')
+  })
+})
+function booksToTable(books){
+  booksTable = '<table class="table"><tbody><tr>'
+  if (books.length > 0 ){
+    for (let i = 0; i < books.length; i++){
+      booksTable += "<a href='/addbook/"+ books[i].googleId +"'>"
+      booksTable += "<img src='" + books[i].thumbnail +"' class='img-thumbnail'>"
+      booksTable += "</a>"
+    }
+  }
+  booksTable += '</tr></tbody></table>'
+  return booksTable
+}
+</script>

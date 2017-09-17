@@ -1,0 +1,11 @@
+<% if ( books.length > 0 ){ %>
+  <table class="table">
+    <tbody>
+      <% for (let i = 0; i < books.length; i++){ %>
+        <tr>
+          <img src="<%= books[i].thumbnail %>" class="img-thumbnail">
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+<% } %>
