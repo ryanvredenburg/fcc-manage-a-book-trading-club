@@ -1,0 +1,26 @@
+<%include nav.ejs %>
+<% if (requests.length > 0) {%>
+  <h3>
+    Your Requests for other books
+  </h3>
+  <% let toggle = false %>
+  <% include requestDisplay.ejs %>
+<% } %>
+<h3>
+  All Books
+</h3>
+<% if ( books.length > 0 ){ %>
+  <table class="table">
+    <tbody>
+      <% for (let i = 0; i < books.length; i++){ %>
+        <tr>
+          <a href='/request/<%= books[i]._id %>'>
+          <img src="<%= books[i].thumbnail %>" class="img-thumbnail">
+          </a>   
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
+<% } %>
+
+
