@@ -1,0 +1,32 @@
+
+
+<% if ( requests.length > 0 ){ %>
+  <table class="table">
+    <tbody>
+      <% for (let i = 0; i < requests.length; i++){ %>
+        <tr>
+          <% let book =  getBook(requests[i].book, books) %>
+          <% let bgColor = '#F00;' %>
+          <% if (requests[i].isAccepted) bgColor = '#0F0;' %>
+          <% if(toggle) { %>
+            <a href='/toggleaccept/<%= requests[i]._id %>'>
+          <% } %>
+          <img src="<%= book.thumbnail %>" class="img-thumbnail" style="background-color: <%= bgColor %>" >
+          <% if(toggle) { %>
+            </a>    
+          <% } %>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+<% } %>
+
+<%
+function getBook(bookId, books){
+    for (let i=0; i < books.length; i++) {
+        if (books[i]._id == bookId) {
+            return books[i];
+        }
+    }
+}
+%>

@@ -1,23 +1,20 @@
 <%include nav.ejs %>
-
-<p>
-requests for your books
-</p>
-
-<p>
-  Your Requests for other books
-</p>
-
-
-<p>
-  your books
-</p>
-<% var books = myBooks %>
-<%include bookDisplay.ejs %>
-
-<p>
+<% if (requests.length > 0) {%>
+  <h3>
+    Other user requests for your books
+  </h3>
+  <% let toggle = true %>
+  <%include requestDisplay.ejs %>
+<% } %>
+<% if (books.length > 0) {%>
+  <h3>
+    your books
+  </h3>
+  <%include bookDisplay.ejs %>
+<% } %>
+<h3>
   add books
-</p>
+</h3>
 
 <div class="input-group">
   <input id="searchString" type="text" class="form-control" placeholder="Search for...">

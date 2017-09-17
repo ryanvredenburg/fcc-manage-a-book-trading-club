@@ -3,6 +3,7 @@
 var path = process.cwd()
 var User = require('../models/users')
 var Book = require('../models/books')
+var Request = require('../models/requests')
 var google = require('google-books-search')
 
 module.exports = function (app, passport) {
@@ -44,7 +45,29 @@ module.exports = function (app, passport) {
   app.route('/mybooks')
 		.get(isLoggedIn, function (req, res) {
   Book.find({owner: req.user.id}, function (error, books) {
-    res.render('myBooks', {myBooks: books, user: req.user})
+    if (error) return res.send(error)
+    Request.find({toUser: req.user.id}, function (error, requests) {
+      if (error) return res.send(error)
+      res.render('myBooks', {
+        books: books,
+        user: req.user,
+        requests: requests
+      })
+    })
+  })
+})
+  app.route('/allbooks')
+		.get(isLoggedIn, function (req, res) {
+  Book.find({}, function (error, books) {
+    if (error) return res.send(error)
+    Request.find({fromUser: req.user.id}, function (error, requests) {
+      if (error) return res.send(error)
+      res.render('allBooks', {
+        books: books,
+        user: req.user,
+        requests: requests
+      })
+    })
   })
 })
 
@@ -56,8 +79,40 @@ module.exports = function (app, passport) {
       owner: req.user.id})
     newBook.save(function (err) {
       if (err) return res.send(err)
-      res.redirect('/myBooks')
+      res.redirect('/mybooks')
     })
+  })
+})
+
+  app.route('/request/:bookId')
+		.get(isLoggedIn, function (req, res) {
+  Book.findOne({_id: req.params.bookId }, function (error, book) {
+    if (error) return res.send(error)
+    var newRequest = new Request({
+      fromUser: req.user.id,
+      toUser: book.owner,
+      book: book._id
+    })
+    newRequest.save(function (error) {
+      if (error) return res.send(error)
+      res.redirect('/allbooks')
+    })
+  })
+})
+
+  app.route('/toggleaccept/:requestId')
+		.get(isLoggedIn, function (req, res) {
+  Request.findOne({_id: req.params.requestId}, function (error, request) {
+    if (error) return res.send(error)
+    if (request.toUser == req.user.id) {
+      request.isAccepted = !request.isAccepted
+      request.save(function (error) {
+        if (error) return res.send(error)
+        res.redirect('/mybooks')
+      })
+    } else {
+      return res.send('Error: This request is not for you')
+    }
   })
 })
 
